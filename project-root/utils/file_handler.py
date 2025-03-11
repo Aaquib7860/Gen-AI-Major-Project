@@ -3,13 +3,12 @@ import docx
 from pptx import Presentation
 import PyPDF2
 from pdf2image import convert_from_path
-from ocr import OCRProcessor  # Import OCRProcessor for collaboration
 import pytesseract
 
 class FileHandler:
     
-    def __init__(self,tesseract_path="C:/Program Files/Tesseract-OCR/tesseract.exe", poppler_path="C:/poppler-24.08.0/Library/bin"):
-        self.ocr_processor = OCRProcessor(tesseract_path,poppler_path) 
+    def __init__(self):
+      pass
 
     def extract_from_txt(self, file_path):
         """Extract text from TXT files"""
@@ -28,23 +27,6 @@ class FileHandler:
         except Exception as e:
             return f"Error reading DOCX file: {str(e)}"
 
-    def has_images(self,pdf_path):
-      # Open the PDF
-        pdf = PyPDF2.PdfReader(pdf_path)
-        for page_num in range(len(pdf.pages)):
-            page = pdf.pages[page_num]
-            # Check for /XObject resources (images are often stored here)
-            if '/XObject' in page['/Resources']:
-                xobjects = page['/Resources']['/XObject'].get_object()
-                for obj in xobjects:
-                    if xobjects[obj]['/Subtype'] == '/Image':
-                        return True
-        # Fallback: Try converting to images (checks rendered content)
-        images = convert_from_path(pdf_path)
-        return len(images) > 0
-        
-        
-    
     def extract_from_pdf(self, file_path):
         """Extract text from text-based PDFs, redirect to OCR if needed"""
         try:
@@ -52,11 +34,6 @@ class FileHandler:
             full_text = [page.extract_text() for page in reader.pages]
             extracted_text = '\n'.join(full_text)
 
-            # Check if the extracted text is empty or minimal (likely image-based)
-            # if not extracted_text.strip() or len(extracted_text.strip()) < 10:
-            if self.has_images(file_path):
-                print(f"No text extracted from {file_path}. Redirecting to OCR...")
-                return self.ocr_processor.process_pdf(file_path)
             return extracted_text
         except Exception as e:
             return f"Error reading PDF file: {str(e)}"
@@ -93,15 +70,13 @@ class FileHandler:
             return "Unsupported file format!"
 
 def main():
-    handler = FileHandler(poppler_path="C:/poppler-24.08.0/Library/bin") 
-    # Add poppler_path="C:/poppler-23.05.0/bin" if needed
+    handler = FileHandler() 
     
-    test_files = [
-       "dataset.txt",
-       "Introduction-to-Probability.pptx",
-       "Doc-Comparison SRS.docx",
-       "Machine learning algorithms are largely driven by mathematics.pdf"
-      
+    
+    # you need to append uploaded file here
+    test_files = [ 
+      "ML UNIT-1 NOTES.pdf",
+      "Introduction-to-Probability.pptx"
     ]
     
     for file_path in test_files:
