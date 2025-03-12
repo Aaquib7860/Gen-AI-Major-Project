@@ -1,11 +1,6 @@
-pytesseract
-pdf2image
 python-docx 
 python-pptx 
 PyPDF2 
-pillow
-easyocr
-poppler
-python-doctr[tf]
-opencv-python
-tesseract
+streamlit
+
+
