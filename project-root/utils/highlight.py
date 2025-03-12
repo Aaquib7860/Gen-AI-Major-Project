@@ -1,35 +1,32 @@
 import re
 
 def highlight_differences(traditional_diff, llm_diff=None):
-    """
-    Highlights differences using HTML formatting for visualization in Streamlit.
-    
-    Args:
-        traditional_diff (list): List of differences from difflib.
-        llm_diff (str, optional): Additional LLM insights.
-    
-    Returns:
-        str: HTML formatted text for Streamlit display.
-    """
-    highlighted_text = ""
+    highlighted_text1 = ""
+    highlighted_text2 = ""
+    change_summary = ""
 
     for diff in traditional_diff:
         action = diff[:2]
         text = diff[2:].strip()
 
         if action == "+ ":
-            highlighted_text += f'<span style="color:green;">{text} </span>'  # Green for additions
+            highlighted_text1 += f'<span style="color:green;">{text} </span>'  # Green for additions
+            highlighted_text2 += f'{text} '
+            change_summary += f'Added: {text} <br>'
         elif action == "- ":
-            highlighted_text += f'<span style="color:red;">{text} </span>'  # Red for deletions
+            highlighted_text1 += f'{text} '
+            highlighted_text2 += f'<span style="color:red;">{text} </span>'  # Red for deletions
+            change_summary += f'Removed: {text} <br>'
         elif action == "? ":
-            # Highlight modified words in yellow
             text = re.sub(r'(\S+)', r'<span style="background-color:yellow; color:black;">\1</span>', text)
-            highlighted_text += f'{text} '
+            highlighted_text1 += f'{text} '
+            highlighted_text2 += f'{text} '
+            change_summary += f'Modified: {text} <br>'
         else:
-            highlighted_text += f'{text} '  # Normal text
+            highlighted_text1 += f'{text} '
+            highlighted_text2 += f'{text} '
 
-    # If LLM insights are available, append them
     if llm_diff:
-        highlighted_text += "<br><br><b>LLM Insights:</b><br>" + llm_diff
+        change_summary += "<br><b>LLM Insights:</b><br>" + llm_diff
 
-    return highlighted_text
+    return highlighted_text1, highlighted_text2

@@ -2,9 +2,7 @@ import os
 import docx
 from pptx import Presentation
 import PyPDF2
-from pdf2image import convert_from_path
-import pytesseract
-
+import streamlit as st
 class FileHandler:
     
     def __init__(self):
@@ -51,38 +49,36 @@ class FileHandler:
         except Exception as e:
             return f"Error reading PPT file: {str(e)}"
 
-    def process_file(self, file_path):
+    def process_file(self, file):
         """Process any supported file type"""
-        if not os.path.exists(file_path):
-            return "File not found!"
+
+        if file is None:
+            return "No file uploaded!"
+    
+        file_extension = file.name.split(".")[-1].lower()
         
-        file_extension = os.path.splitext(file_path)[1].lower()
-        
-        if file_extension == '.txt':
-            return self.extract_from_txt(file_path)
-        elif file_extension == '.docx':
-            return self.extract_from_docx(file_path)
-        elif file_extension == '.pdf':
-            return self.extract_from_pdf(file_path)
-        elif file_extension in ['.ppt', '.pptx']:
-            return self.extract_from_ppt(file_path)
+        if file_extension == 'txt':
+            return self.extract_from_txt(file)
+        elif file_extension == 'docx':
+            return self.extract_from_docx(file)
+        elif file_extension == 'pdf':
+            return self.extract_from_pdf(file)
+        elif file_extension in ['ppt', 'pptx']:
+            return self.extract_from_ppt(file)
         else:
             return "Unsupported file format!"
 
-def main():
-    handler = FileHandler() 
-    
-    
-    # you need to append uploaded file here
-    test_files = [ 
-      "ML UNIT-1 NOTES.pdf",
-      "Introduction-to-Probability.pptx"
-    ]
-    
-    for file_path in test_files:
-        print(f"\nExtracting text from {file_path}:")
-        result = handler.process_file(file_path)
-        print(result)
 
-if __name__ == "__main__":
-    main()
+def loading_doc(doc1, doc2):
+    handler = FileHandler()
+    
+    files = [doc1, doc2]
+    extracted_texts = []
+    
+    for file in files:
+        if file is not None:
+            file_extension = file.name.split(".")[-1].lower()
+            extracted_texts.append(handler.process_file(file))
+        else:
+            extracted_texts.append("No file uploaded")
+    return extracted_texts
